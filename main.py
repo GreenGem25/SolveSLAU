@@ -32,7 +32,7 @@ def zeidel():
     pass
 
 
-variables = 3
+variables = 15
 
 root = Tk()
 root.title('SolveSLAU')
@@ -69,6 +69,7 @@ for r in range(variables):
 symbolPicture = Label(root, image=photo, background='#27292b')
 symbolPicture.image = photo
 symbolPicture.grid(column=0, rowspan=variables, row=0)
+
 methodLabel = Label(text='Метод решения:', background='#27292b', foreground='#fff', font=20)
 methodLabel.place(height=50, width=200, relx=0.73, rely=0.01)
 methods = ['Гаусс', 'Простые итерации', 'Зейдель']
@@ -82,9 +83,6 @@ comboStyle.theme_create('combostyle', parent='alt', settings={
         }
     }
 })
-btnSolve = Button(text='Решить', command=btnSolveClicked, bg='#6b6b6b',
-                  activebackground='#27292b', fg='#fff', activeforeground='#fff', font=30)
-btnSolve.place(height=50, width=200, relx=0.73, rely=0.35)
 comboStyle.theme_use('combostyle')
 combobox = Combobox(values=methods, foreground='#fff', font=20)
 combobox['state'] = 'readonly'
@@ -94,5 +92,8 @@ varLabel = Label(text='Количество переменных:', background='
 varLabel.place(height=50, width=200, relx=0.73, rely=0.15)
 varEntry = Entry(validate='focus', validatecommand=checkInt, background='#6b6b6b', foreground='#fff', font=20)
 varEntry.place(relx=0.739, rely=0.248)
+btnSolve = Button(text='Решить', command=btnSolveClicked, bg='#6b6b6b',
+                  activebackground='#27292b', fg='#fff', activeforeground='#fff', font=30)
+btnSolve.place(height=50, width=200, relx=0.73, rely=0.35)
 
 root.mainloop()
