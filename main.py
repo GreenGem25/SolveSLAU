@@ -117,7 +117,8 @@ for r in range(variables):
     i = 1
     for c in range(1, variables*2+2):
         if c % 2 != 0:
-            entry = Entry(validate='focus', validatecommand=checkFloat, background='#6b6b6b', foreground='#fff', font=20, width=10)
+            entry = Entry(validate='focus', validatecommand=checkFloat, background='#6b6b6b',
+                          foreground='#fff', font=20, width=10)
             entry.grid(row=r, column=c, sticky=NW, columnspan=1, rowspan=1, padx=5, pady=5)
         else:
             if i == variables:
