@@ -82,6 +82,7 @@ def simpleIterations(A, B, eps, iter):
 def zeidel(A, B, eps, iter):
     pass
 
+
 # Количество переменных системы
 variables = 5
 
