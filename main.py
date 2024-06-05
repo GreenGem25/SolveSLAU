@@ -95,7 +95,7 @@ root.minsize(900, 480)
 icon = PhotoImage(file='calc.png')
 root.iconphoto(True, icon)
 
-# Загрузка картиныки символа системы
+# Загрузка картинки символа системы
 image = Image.open('symbol.png')
 image = image.resize((variables*10, round(variables*10*3.6537)))
 photo = ImageTk.PhotoImage(image)
