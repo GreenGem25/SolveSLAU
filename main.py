@@ -3,6 +3,7 @@ from tkinter.ttk import Combobox
 from tkinter.ttk import Style
 from PIL import Image, ImageTk
 
+
 #
 #   Функция, запускающая процесс решения
 #   по выбранному методу.
