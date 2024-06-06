@@ -30,16 +30,6 @@ def checkFloatInput(val):
 
 
 #
-#   Функция, проверяющая, является ли
-#   входное значение int.
-#
-#   Возвращает True/False (bool)
-#
-def checkIntInput(val):
-    return True
-
-
-#
 #   Функция, возвращающая выбранный пользователем
 #   метод решения системы.
 #
@@ -47,6 +37,62 @@ def checkIntInput(val):
 #
 def methodSelected(event):
     pass
+
+
+def changeVar():
+    variables = int(spinbox.get())
+    updateCanvas(variables)
+
+
+def updateCanvas(variables):
+
+    # Загрузка картинки символа системы
+    image = Image.open('symbol.png')
+    image = image.resize((variables * 3, variables * 35))
+    photo = ImageTk.PhotoImage(image)
+
+    #
+    #   Создание полей ввода в систему
+    #
+
+    frame_canvas = Frame(frame_main)
+    frame_canvas.grid(row=0, column=0, pady=(5, 0), sticky='nw', rowspan=variables)
+    frame_canvas.grid_rowconfigure(0, weight=1)
+    frame_canvas.grid_columnconfigure(0, weight=1)
+    canvas = Canvas(frame_canvas, scrollregion=(0, 0, variables * 2 * 91, variables * 2 * 20), bg='#27292b', width=650,
+                    height=350,
+                    highlightthickness=0)
+    vsbX = Scrollbar(frame_canvas, orient=HORIZONTAL, command=canvas.xview)
+    vsbY = Scrollbar(frame_canvas, orient=VERTICAL, command=canvas.yview)
+    canvas.grid(row=0, column=0, sticky='nwes')
+    vsbX.grid(row=1, column=0, sticky='ew')
+    vsbY.grid(row=0, column=1, sticky='ns')
+
+    frame_entries = Frame(canvas, bg='#27292b')
+    canvas.create_window((0, 0), window=frame_entries, anchor='nw')
+    entries = []
+
+    # Добавление картинки символа системы
+    symbolPicture = Label(frame_entries, image=photo, background='#27292b')
+    symbolPicture.image = photo
+    symbolPicture.grid(column=0, rowspan=variables, row=0, sticky='nw')
+
+    for r in range(variables):
+        i = 1
+        for c in range(1, variables * 2 + 2):
+            if c % 2 != 0:
+                entry = Entry(frame_entries, validate='focus', validatecommand=checkFloat, background='#6b6b6b',
+                              foreground='#fff', font=20, width=10)
+                entries.append(entry)
+                entry.grid(row=r, column=c, sticky=NW, columnspan=1, rowspan=1, padx=5, pady=5)
+            else:
+                if i == variables:
+                    label = Label(frame_entries, text=f'x{i} = ', background='#27292b', foreground='#fff', font=20)
+                    label.grid(row=r, column=c, sticky=NW, columnspan=1, rowspan=1, ipadx=5, ipady=5)
+                else:
+                    label = Label(frame_entries, text=f'x{i} + ', background='#27292b', foreground='#fff', font=20)
+                    label.grid(row=r, column=c, sticky=NW, columnspan=1, rowspan=1, ipadx=5, ipady=5)
+                    i += 1
 
 
 #
@@ -84,7 +130,7 @@ def zeidel(A, B, eps, iter):
 
 
 # Количество переменных системы
-variables = 20
+variables = 2
 
 # Открытие основного окна
 root = Tk()
@@ -95,14 +141,10 @@ root.resizable(False, False)
 icon = PhotoImage(file='calc.png')
 root.iconphoto(True, icon)
 
-# Загрузка картинки символа системы
-image = Image.open('symbol.png')
-image = image.resize((variables*3, variables*35))
-photo = ImageTk.PhotoImage(image)
+
 
 # Регистрация функций проверки ввода чисел
 checkFloat = (root.register(checkFloatInput), "%P")
-checkInt = (root.register(checkIntInput), "%P")
 
 root.grid_rowconfigure(0, weight=1)
 root.columnconfigure(0, weight=1)
@@ -110,47 +152,8 @@ root.columnconfigure(0, weight=1)
 frame_main = Frame(root, bg="#27292b")
 frame_main.grid(sticky='news')
 
-#
-#   Создание полей ввода в систему
-#
+updateCanvas(variables)
 
-frame_canvas = Frame(frame_main)
-frame_canvas.grid(row=0, column=0, pady=(5, 0), sticky='nw', rowspan=variables)
-frame_canvas.grid_rowconfigure(0, weight=1)
-frame_canvas.grid_columnconfigure(0, weight=1)
-canvas = Canvas(frame_canvas, scrollregion=(0, 0, variables*2*91, variables*2*20), bg='#27292b', width=650, height=350,
-                highlightthickness=0)
-vsbX = Scrollbar(frame_canvas, orient=HORIZONTAL, command=canvas.xview)
-vsbY = Scrollbar(frame_canvas, orient=VERTICAL, command=canvas.yview)
-canvas.grid(row=0, column=0, sticky='nwes')
-vsbX.grid(row=1, column=0, sticky='ew', columnspan=variables)
-vsbY.grid(row=0, column=1, sticky='ns', rowspan=variables)
-
-frame_entries = Frame(canvas, bg='#27292b')
-canvas.create_window((0, 0), window=frame_entries, anchor='nw')
-entries = []
-
-# Добавление картинки символа системы
-symbolPicture = Label(frame_entries, image=photo, background='#27292b')
-symbolPicture.image = photo
-symbolPicture.grid(column=0, rowspan=variables, row=0, sticky='nw')
-
-for r in range(variables):
-    i = 1
-    for c in range(1, variables*2+2):
-        if c % 2 != 0:
-            entry = Entry(frame_entries, validate='focus', validatecommand=checkFloat, background='#6b6b6b',
-                          foreground='#fff', font=20, width=10)
-            entries.append(entry)
-            entry.grid(row=r, column=c, sticky=NW, columnspan=1, rowspan=1, padx=5, pady=5)
-        else:
-            if i == variables:
-                label = Label(frame_entries, text=f'x{i} = ', background='#27292b', foreground='#fff', font=20)
-                label.grid(row=r, column=c, sticky=NW, columnspan=1, rowspan=1, ipadx=5, ipady=5)
-            else:
-                label = Label(frame_entries, text=f'x{i} + ', background='#27292b', foreground='#fff', font=20)
-                label.grid(row=r, column=c, sticky=NW, columnspan=1, rowspan=1, ipadx=5, ipady=5)
-                i += 1
 
 #
 #   Создание кнопок и текстовых надписей
@@ -186,7 +189,8 @@ varLabel = Label(frame_buttons, text='Количество переменных:
 varLabel.grid(row=2, column=2, pady=(5, 5))
 
 # Переключатель для количества переменных
-spinbox = Spinbox(frame_buttons, from_=2, to=20, background='#6b6b6b', foreground='#000', font=20)
+spinbox = Spinbox(frame_buttons, from_=2, to=20, background='#6b6b6b', foreground='#000', font=20, state="readonly",
+                  command=changeVar)
 spinbox.grid(row=3, column=2, pady=(5, 5))
 
 # Кнопка "Решить"
