@@ -185,9 +185,9 @@ combobox.bind("<<ComboboxSelected>>", methodSelected)
 varLabel = Label(frame_buttons, text='Количество переменных:', background='#27292b', foreground='#fff', font=20)
 varLabel.grid(row=2, column=2, pady=(5, 5))
 
-# Поле ввода для количества переменных
-varEntry = Entry(frame_buttons, validate='focus', validatecommand=checkInt, background='#6b6b6b', foreground='#fff', font=20)
-varEntry.grid(row=3, column=2, pady=(5, 5))
+# Переключатель для количества переменных
+spinbox = Spinbox(frame_buttons, from_=2, to=20, background='#6b6b6b', foreground='#000', font=20)
+spinbox.grid(row=3, column=2, pady=(5, 5))
 
 # Кнопка "Решить"
 btnSolve = Button(frame_buttons, text='Решить', command=btnSolveClicked, bg='#6b6b6b',
