@@ -56,11 +56,11 @@ def updateCanvas(variables):
     #
 
     frame_canvas = Frame(frame_main)
-    frame_canvas.grid(row=0, column=0, pady=(5, 0), sticky='nw', rowspan=variables)
+    frame_canvas.grid(row=0, column=0, sticky='nw', rowspan=variables)
     frame_canvas.grid_rowconfigure(0, weight=1)
     frame_canvas.grid_columnconfigure(0, weight=1)
     canvas = Canvas(frame_canvas, scrollregion=(0, 0, variables * 2 * 91, variables * 2 * 20), bg='#27292b', width=650,
-                    height=350,
+                    height=463,
                     highlightthickness=0)
     vsbX = Scrollbar(frame_canvas, orient=HORIZONTAL, command=canvas.xview)
     vsbY = Scrollbar(frame_canvas, orient=VERTICAL, command=canvas.yview)
@@ -129,9 +129,6 @@ def zeidel(A, B, eps, iter):
     pass
 
 
-# Количество переменных системы
-variables = 2
-
 # Открытие основного окна
 root = Tk()
 root.title('SolveSLAU')
@@ -140,8 +137,6 @@ root['bg'] = '#27292b'
 root.resizable(False, False)
 icon = PhotoImage(file='calc.png')
 root.iconphoto(True, icon)
-
-
 
 # Регистрация функций проверки ввода чисел
 checkFloat = (root.register(checkFloatInput), "%P")
@@ -152,8 +147,8 @@ root.columnconfigure(0, weight=1)
 frame_main = Frame(root, bg="#27292b")
 frame_main.grid(sticky='news')
 
-updateCanvas(variables)
-
+# По умолчанию 2 переменные
+updateCanvas(2)
 
 #
 #   Создание кнопок и текстовых надписей
@@ -174,12 +169,13 @@ comboStyle.theme_create('combostyle', parent='alt', settings={
         'configure': {
             'selectbackground': '#6b6b6b',
             'fieldbackground': '#6b6b6b',
-            'background': '#6b6b6b'
+            'foreground': '#fff',
+            'background': '#6b6b6b',
         }
     }
 })
 comboStyle.theme_use('combostyle')
-combobox = Combobox(frame_buttons, values=methods, foreground='#fff', font=20)
+combobox = Combobox(frame_buttons, values=methods, font=20)
 combobox['state'] = 'readonly'
 combobox.grid(row=1, column=2, pady=(5, 5))
 combobox.bind("<<ComboboxSelected>>", methodSelected)
@@ -189,8 +185,8 @@ varLabel = Label(frame_buttons, text='Количество переменных:
 varLabel.grid(row=2, column=2, pady=(5, 5))
 
 # Переключатель для количества переменных
-spinbox = Spinbox(frame_buttons, from_=2, to=20, background='#6b6b6b', foreground='#000', font=20, state="readonly",
-                  command=changeVar)
+spinbox = Spinbox(frame_buttons, from_=2, to=20, font=20, state="readonly", command=changeVar,
+                  readonlybackground='#6b6b6b', foreground='#fff', buttonbackground='#6b6b6b')
 spinbox.grid(row=3, column=2, pady=(5, 5))
 
 # Кнопка "Решить"
