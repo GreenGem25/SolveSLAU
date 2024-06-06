@@ -84,7 +84,7 @@ def zeidel(A, B, eps, iter):
 
 
 # Количество переменных системы
-variables = 2
+variables = 20
 
 # Открытие основного окна
 root = Tk()
@@ -97,7 +97,7 @@ root.iconphoto(True, icon)
 
 # Загрузка картинки символа системы
 image = Image.open('symbol.png')
-image = image.resize((variables*10, round(variables*10*3.6537)))
+image = image.resize((variables*3, variables*35))
 photo = ImageTk.PhotoImage(image)
 
 # Регистрация функций проверки ввода чисел
