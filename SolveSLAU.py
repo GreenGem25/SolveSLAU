@@ -1,3 +1,4 @@
+import tkinter
 from tkinter import *
 from tkinter.ttk import Combobox
 from tkinter.ttk import Style
@@ -12,11 +13,8 @@ class SolveSLAU:
         self.__root.geometry('900x480')
         self.__root['bg'] = '#27292b'
         self.__root.resizable(False, False)
-        __icon = PhotoImage(file='calc.png')
-        self.__root.iconphoto(True, __icon)
-
-        # Регистрация функций проверки ввода чисел
-        __checkFloat = (self.__root.register(self.__checkFloatInput), "%P")
+        icon = PhotoImage(file='calc.png')
+        self.__root.iconphoto(True, icon)
 
         self.__root.grid_rowconfigure(0, weight=1)
         self.__root.columnconfigure(0, weight=1)
@@ -33,16 +31,16 @@ class SolveSLAU:
         #   Создание кнопок и текстовых надписей
         #
 
-        frame_buttons = Frame(self.__frame_main, bg="#27292b")
-        frame_buttons.grid(row=0, column=1, sticky='news')
+        self.__frame_buttons = Frame(self.__frame_main, bg="#27292b")
+        self.__frame_buttons.grid(row=0, column=1, sticky='news')
 
         # Надписть "Метод решения"
-        methodLabel = Label(frame_buttons, text='Метод решения:', background='#27292b', foreground='#fff', font=20)
+        methodLabel = Label(self.__frame_buttons, text='Метод решения:', background='#27292b', foreground='#fff', font=20)
         methodLabel.grid(row=0, column=2, padx=55, pady=5)
 
         # Выпадающий список для выбора методов
         methods = ['Гаусс', 'Простые итерации', 'Зейдель']
-        self.__comboSelected = StringVar()
+        self.__comboSelected = ''
         comboStyle = Style()
         comboStyle.theme_create('combostyle', parent='alt', settings={
             'TCombobox': {
@@ -55,24 +53,53 @@ class SolveSLAU:
             }
         })
         comboStyle.theme_use('combostyle')
-        combobox = Combobox(frame_buttons, values=methods, font=20, textvariable=self.__comboSelected)
-        combobox['state'] = 'readonly'
-        combobox.set(methods[0])
-        combobox.grid(row=1, column=2, pady=(5, 5))
+        self.__combobox = Combobox(self.__frame_buttons, values=methods, font=20)
+        self.__combobox.bind('<<ComboboxSelected>>', self.__changeMethod)
+        self.__combobox['state'] = 'readonly'
+        self.__combobox.set(methods[0])
+        self.__combobox.grid(row=1, column=2, pady=(5, 5))
 
         # Надписть "Количество переменных"
-        varLabel = Label(frame_buttons, text='Количество переменных:', background='#27292b', foreground='#fff', font=20)
+        varLabel = Label(self.__frame_buttons, text='Количество переменных:', background='#27292b', foreground='#fff', font=20)
         varLabel.grid(row=2, column=2, pady=(5, 5))
 
         # Переключатель для количества переменных
-        self.__spinbox = Spinbox(frame_buttons, from_=2, to=20, font=20, state="readonly", command=self.__changeVar,
+        self.__spinbox = Spinbox(self.__frame_buttons, from_=2, to=20, font=20, state="readonly", command=self.__changeVar,
                                  readonlybackground='#6b6b6b', foreground='#fff', buttonbackground='#6b6b6b')
         self.__spinbox.grid(row=3, column=2, pady=(5, 5))
 
+        # Надпись "Точность"
+        epsLabel = Label(self.__frame_buttons, text='Точность:', background='#27292b',
+                         foreground='#fff', font=20)
+        epsLabel.grid(row=4, column=2, pady=(5, 5))
+
+        # Поле ввода точности, в методе Гаусса отключено
+        self.__entryEps = Entry(self.__frame_buttons, validate='key',
+                         vcmd=(self.__root.register(self.__checkFloatInput), '%P'),
+                         background='#6b6b6b',
+                         foreground='#fff', font=20, width=10)
+        self.__entryEps.insert(0, '0.1')
+        self.__entryEps.config(state='disabled')
+        self.__entryEps.grid(row=5, column=2, pady=(5, 5))
+
+        # Надпись "Количество итераций"
+        iterLabel = Label(self.__frame_buttons, text='Количество итераций:', background='#27292b',
+                          foreground='#fff', font=20)
+        iterLabel.grid(row=6, column=2, pady=(5, 5))
+
+        # Поле ввода количества итераций, в методе Гаусса отключено
+        self.__entryIter = Entry(self.__frame_buttons, validate='key',
+                          vcmd=(self.__root.register(self.__checkIntInput), '%P'),
+                          background='#6b6b6b',
+                          foreground='#fff', font=20, width=10)
+        self.__entryIter.insert(0, '1')
+        self.__entryIter.config(state='disabled')
+        self.__entryIter.grid(row=7, column=2, pady=(5, 5))
+
         # Кнопка "Решить"
-        btnSolve = Button(frame_buttons, text='Решить', command=self.__btnSolveClicked, bg='#6b6b6b',
+        btnSolve = Button(self.__frame_buttons, text='Решить', command=self.__btnSolveClicked, bg='#6b6b6b',
                                  activebackground='#27292b', fg='#fff', activeforeground='#fff', font=30)
-        btnSolve.grid(row=4, column=2, pady=(15, 5))
+        btnSolve.grid(row=8, column=2, pady=(15, 5))
 
     def start(self):
         self.__root.update_idletasks()
@@ -92,12 +119,15 @@ class SolveSLAU:
     def __btnSolveClicked(self):
         a = []
         b = []
-        a_i = []  # строка списка a
+        a_i = []  # строка списка A
         j = 0
+
+        # 1D entries matrix to 2D A matrix and 1D B matrix
         for i in range(len(self.__entries)):
             val = self.__entries[i].get()
             if val == '':
                 val = 0
+                self.__entries[i].insert(0, '0')
             if j == self.__variables:
                 b.append(float(val))
                 a.append(a_i)
@@ -109,7 +139,49 @@ class SolveSLAU:
 
         print(a)
         print(b)
-        print(self.__comboSelected.get())
+
+        if self.__comboSelected == 'Гаусс':
+            print('Гаусс')
+        elif self.__comboSelected == 'Простые итерации':
+            print('Простые итерации')
+            print(self.__getEpsAndIter())
+        elif self.__comboSelected == 'Зейдель':
+            print('Зейдель')
+            print(self.__getEpsAndIter())
+
+    #
+    #   Функция, которая получает значения
+    #   точности и количества итераций из полей ввода
+    #   и обновляет их в случае ошибки
+    #
+    #   Возвращает: (точность, количество итераций)
+    #
+    def __getEpsAndIter(self):
+        eps = self.__entryEps.get()
+        if eps == '':
+            eps = 0.1
+            self.__entryEps.insert(0, '0.1')
+        eps = float(eps)
+        if eps == 0:
+            eps = 0.1
+            self.__entryEps.delete(0, tkinter.END)
+            self.__entryEps.insert(0, '0.1')
+        if eps < 0:
+            eps = abs(eps)
+            self.__entryEps.delete(0, tkinter.END)
+            self.__entryEps.insert(0, str(eps))
+
+        iterCount = self.__entryIter.get()
+        if iterCount == '':
+            iterCount = 1
+            self.__entryIter.insert(0, '1')
+        iterCount = int(iterCount)
+        if iterCount == 0:
+            iterCount = 1
+            self.__entryIter.delete(0, tkinter.END)
+            self.__entryIter.insert(0, '1')
+
+        return eps, iterCount
 
     #
     #   Функция, проверяющая, является ли
@@ -127,11 +199,48 @@ class SolveSLAU:
         return True
 
     #
+    #   Функция, проверяющая, является ли
+    #   входное значение int.
+    #
+    #   Возвращает True/False (bool)
+    #
+    def __checkIntInput(self, inp):
+        if inp == '': return True
+        try:
+            int(inp)
+        except:
+            return False
+        return True
+
+    #
     #   Функция, меняющая количество переменных
     #
     def __changeVar(self):
         self.__variables = int(self.__spinbox.get())
         self.__updateCanvas()
+
+    #
+    #   Функция, меняющая метод решения
+    #
+    def __changeMethod(self, event):
+        self.__comboSelected = self.__combobox.get()
+
+        if self.__comboSelected == 'Простые итерации' or self.__comboSelected == 'Зейдель':
+            self.__updateFrame(True)
+        else:
+            self.__updateFrame(False)
+
+    #
+    #   Функция добавляющая поля ввода
+    #   точности и количества итераций
+    #
+    def __updateFrame(self, turnON):
+        if turnON:
+            self.__entryEps.config(state='normal')
+            self.__entryIter.config(state='normal')
+        else:
+            self.__entryEps.config(state='disabled')
+            self.__entryIter.config(state='disabled')
 
     #
     #   Функция, создающая таблицу с полями ввода
