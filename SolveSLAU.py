@@ -12,11 +12,11 @@ class SolveSLAU:
         self.__root.geometry('900x480')
         self.__root['bg'] = '#27292b'
         self.__root.resizable(False, False)
-        self.__icon = PhotoImage(file='calc.png')
-        self.__root.iconphoto(True, self.__icon)
+        __icon = PhotoImage(file='calc.png')
+        self.__root.iconphoto(True, __icon)
 
         # Регистрация функций проверки ввода чисел
-        self.__checkFloat = (self.__root.register(self.__checkFloatInput), "%P")
+        __checkFloat = (self.__root.register(self.__checkFloatInput), "%P")
 
         self.__root.grid_rowconfigure(0, weight=1)
         self.__root.columnconfigure(0, weight=1)
@@ -33,18 +33,18 @@ class SolveSLAU:
         #   Создание кнопок и текстовых надписей
         #
 
-        self.__frame_buttons = Frame(self.__frame_main, bg="#27292b")
-        self.__frame_buttons.grid(row=0, column=1, sticky='news')
+        frame_buttons = Frame(self.__frame_main, bg="#27292b")
+        frame_buttons.grid(row=0, column=1, sticky='news')
 
         # Надписть "Метод решения"
-        self.__methodLabel = Label(self.__frame_buttons, text='Метод решения:', background='#27292b', foreground='#fff', font=20)
-        self.__methodLabel.grid(row=0, column=2, padx=55, pady=5)
+        methodLabel = Label(frame_buttons, text='Метод решения:', background='#27292b', foreground='#fff', font=20)
+        methodLabel.grid(row=0, column=2, padx=55, pady=5)
 
         # Выпадающий список для выбора методов
-        self.__methods = ['Гаусс', 'Простые итерации', 'Зейдель']
+        methods = ['Гаусс', 'Простые итерации', 'Зейдель']
         self.__comboSelected = StringVar()
-        self.__comboStyle = Style()
-        self.__comboStyle.theme_create('combostyle', parent='alt', settings={
+        comboStyle = Style()
+        comboStyle.theme_create('combostyle', parent='alt', settings={
             'TCombobox': {
                 'configure': {
                     'selectbackground': '#6b6b6b',
@@ -54,25 +54,25 @@ class SolveSLAU:
                 }
             }
         })
-        self.__comboStyle.theme_use('combostyle')
-        self.__combobox = Combobox(self.__frame_buttons, values=self.__methods, font=20, textvariable=self.__comboSelected)
-        self.__combobox['state'] = 'readonly'
-        self.__combobox.set(self.__methods[0])
-        self.__combobox.grid(row=1, column=2, pady=(5, 5))
+        comboStyle.theme_use('combostyle')
+        combobox = Combobox(frame_buttons, values=methods, font=20, textvariable=self.__comboSelected)
+        combobox['state'] = 'readonly'
+        combobox.set(methods[0])
+        combobox.grid(row=1, column=2, pady=(5, 5))
 
         # Надписть "Количество переменных"
-        self.__varLabel = Label(self.__frame_buttons, text='Количество переменных:', background='#27292b', foreground='#fff', font=20)
-        self.__varLabel.grid(row=2, column=2, pady=(5, 5))
+        varLabel = Label(frame_buttons, text='Количество переменных:', background='#27292b', foreground='#fff', font=20)
+        varLabel.grid(row=2, column=2, pady=(5, 5))
 
         # Переключатель для количества переменных
-        self.__spinbox = Spinbox(self.__frame_buttons, from_=2, to=20, font=20, state="readonly", command=self.__changeVar,
+        self.__spinbox = Spinbox(frame_buttons, from_=2, to=20, font=20, state="readonly", command=self.__changeVar,
                                  readonlybackground='#6b6b6b', foreground='#fff', buttonbackground='#6b6b6b')
         self.__spinbox.grid(row=3, column=2, pady=(5, 5))
 
         # Кнопка "Решить"
-        self.__btnSolve = Button(self.__frame_buttons, text='Решить', command=self.__btnSolveClicked, bg='#6b6b6b',
+        btnSolve = Button(frame_buttons, text='Решить', command=self.__btnSolveClicked, bg='#6b6b6b',
                                  activebackground='#27292b', fg='#fff', activeforeground='#fff', font=30)
-        self.__btnSolve.grid(row=4, column=2, pady=(15, 5))
+        btnSolve.grid(row=4, column=2, pady=(15, 5))
 
     def start(self):
         self.__root.update_idletasks()
@@ -119,6 +119,7 @@ class SolveSLAU:
     #
     def __checkFloatInput(self, inp):
         if inp == '': return True
+        if inp == '-': return True
         try:
             float(inp)
         except:
