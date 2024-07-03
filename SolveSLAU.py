@@ -35,12 +35,13 @@ class SolveSLAU:
         self.__frame_buttons.grid(row=0, column=1, sticky='news')
 
         # Надписть "Метод решения"
-        methodLabel = Label(self.__frame_buttons, text='Метод решения:', background='#27292b', foreground='#fff', font=20)
+        methodLabel = Label(self.__frame_buttons, text='Метод решения:', background='#27292b', foreground='#fff',
+                            font=20)
         methodLabel.grid(row=0, column=2, padx=55, pady=5)
 
         # Выпадающий список для выбора методов
         methods = ['Гаусс', 'Простые итерации', 'Зейдель']
-        self.__comboSelected = ''
+        self.__comboSelected = methods[0]
         comboStyle = Style()
         comboStyle.theme_create('combostyle', parent='alt', settings={
             'TCombobox': {
@@ -60,11 +61,13 @@ class SolveSLAU:
         self.__combobox.grid(row=1, column=2, pady=(5, 5))
 
         # Надписть "Количество переменных"
-        varLabel = Label(self.__frame_buttons, text='Количество переменных:', background='#27292b', foreground='#fff', font=20)
+        varLabel = Label(self.__frame_buttons, text='Количество переменных:', background='#27292b', foreground='#fff',
+                         font=20)
         varLabel.grid(row=2, column=2, pady=(5, 5))
 
         # Переключатель для количества переменных
-        self.__spinbox = Spinbox(self.__frame_buttons, from_=2, to=20, font=20, state="readonly", command=self.__changeVar,
+        self.__spinbox = Spinbox(self.__frame_buttons, from_=2, to=20, font=20, state="readonly",
+                                 command=self.__changeVar,
                                  readonlybackground='#6b6b6b', foreground='#fff', buttonbackground='#6b6b6b')
         self.__spinbox.grid(row=3, column=2, pady=(5, 5))
 
@@ -75,9 +78,9 @@ class SolveSLAU:
 
         # Поле ввода точности, в методе Гаусса отключено
         self.__entryEps = Entry(self.__frame_buttons, validate='key',
-                         vcmd=(self.__root.register(self.__checkFloatInput), '%P'),
-                         background='#6b6b6b',
-                         foreground='#fff', font=20, width=10)
+                                vcmd=(self.__root.register(self.__checkFloatInput), '%P'),
+                                background='#6b6b6b',
+                                foreground='#fff', font=20, width=10)
         self.__entryEps.insert(0, '0.1')
         self.__entryEps.config(state='disabled')
         self.__entryEps.grid(row=5, column=2, pady=(5, 5))
@@ -89,16 +92,16 @@ class SolveSLAU:
 
         # Поле ввода количества итераций, в методе Гаусса отключено
         self.__entryIter = Entry(self.__frame_buttons, validate='key',
-                          vcmd=(self.__root.register(self.__checkIntInput), '%P'),
-                          background='#6b6b6b',
-                          foreground='#fff', font=20, width=10)
+                                 vcmd=(self.__root.register(self.__checkIntInput), '%P'),
+                                 background='#6b6b6b',
+                                 foreground='#fff', font=20, width=10)
         self.__entryIter.insert(0, '1')
         self.__entryIter.config(state='disabled')
         self.__entryIter.grid(row=7, column=2, pady=(5, 5))
 
         # Кнопка "Решить"
         btnSolve = Button(self.__frame_buttons, text='Решить', command=self.__btnSolveClicked, bg='#6b6b6b',
-                                 activebackground='#27292b', fg='#fff', activeforeground='#fff', font=30)
+                          activebackground='#27292b', fg='#fff', activeforeground='#fff', font=30)
         btnSolve.grid(row=8, column=2, pady=(15, 5))
 
     def start(self):
@@ -137,17 +140,26 @@ class SolveSLAU:
                 a_i.append(float(val))
                 j += 1
 
-        print(a)
-        print(b)
-
         if self.__comboSelected == 'Гаусс':
             print('Гаусс')
+            try:
+                print(self.__gauss(a, b))
+            except ZeroDivisionError:
+                print('Невозможно решить систему.')
         elif self.__comboSelected == 'Простые итерации':
             print('Простые итерации')
-            print(self.__getEpsAndIter())
+            eps, iterCount = self.__getEpsAndIter()
+            try:
+                print(self.__simpleIterations(a, b, eps, iterCount))
+            except ZeroDivisionError:
+                print('Невозможно решить систему.')
         elif self.__comboSelected == 'Зейдель':
             print('Зейдель')
-            print(self.__getEpsAndIter())
+            eps, iterCount = self.__getEpsAndIter()
+            try:
+                print(self.__zeidel(a, b, eps, iterCount))
+            except ZeroDivisionError:
+                print('Невозможно решить систему.')
 
     #
     #   Функция, которая получает значения
@@ -260,7 +272,8 @@ class SolveSLAU:
         frame_canvas.grid(row=0, column=0, sticky='nw', rowspan=self.__variables)
         frame_canvas.grid_rowconfigure(0, weight=1)
         frame_canvas.grid_columnconfigure(0, weight=1)
-        canvas = Canvas(frame_canvas, scrollregion=(0, 0, self.__variables * 2 * 91, self.__variables * 2 * 20), bg='#27292b',
+        canvas = Canvas(frame_canvas, scrollregion=(0, 0, self.__variables * 2 * 91, self.__variables * 2 * 20),
+                        bg='#27292b',
                         width=650,
                         height=463,
                         highlightthickness=0)
@@ -283,7 +296,8 @@ class SolveSLAU:
             i = 1
             for c in range(1, self.__variables * 2 + 2):
                 if c % 2 != 0:
-                    entry = Entry(frame_entries, validate='key', vcmd=(self.__root.register(self.__checkFloatInput), '%P'),
+                    entry = Entry(frame_entries, validate='key',
+                                  vcmd=(self.__root.register(self.__checkFloatInput), '%P'),
                                   background='#6b6b6b',
                                   foreground='#fff', font=20, width=10)
                     self.__entries.append(entry)
@@ -304,7 +318,21 @@ class SolveSLAU:
     #   Возвращает массив ответов X (float[])
     #
     def __gauss(self, a, b):
-        pass
+        x = [0] * self.__variables
+        for k in range(0, self.__variables - 1):
+            for i in range(k + 1, self.__variables):
+                c = a[i][k] / a[k][k]
+                a[i][k] = 0
+                for j in range(k + 1, self.__variables):
+                    a[i][j] -= c * a[k][j]
+                b[i] -= c * b[k]
+        x[self.__variables - 1] = b[self.__variables - 1] / a[self.__variables - 1][self.__variables - 1]
+        for i in range(self.__variables - 1, -1, -1):
+            s = 0.0
+            for j in range(i + 1, self.__variables):
+                s += a[i][j] * x[j]
+                x[i] = (b[i] - s) / a[i][i]
+        return x
 
     #
     #   Функция, решающая систему методом простых итераций.
@@ -314,7 +342,7 @@ class SolveSLAU:
     #   итераций iter (int).
     #   Возвращает массив ответов X (float[]).
     #
-    def __simpleIterations(self, a, b, eps, iter):
+    def __simpleIterations(self, a, b, eps, iterCount):
         pass
 
     #
@@ -325,7 +353,7 @@ class SolveSLAU:
     #   итераций iter (int).
     #   Возвращает массив ответов X (float[]).
     #
-    def __zeidel(self, a, b, eps, iter):
+    def __zeidel(self, a, b, eps, iterCount):
         pass
 
 
