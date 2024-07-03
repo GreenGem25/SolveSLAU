@@ -243,8 +243,11 @@ class SolveSLAU:
             self.__updateFrame(False)
 
     #
-    #   Функция добавляющая поля ввода
-    #   точности и количества итераций
+    #   Функция активирующая или деактивирующая
+    #   поля ввода точности и количества итераций
+    #
+    #   turnON = True для активации
+    #   turnON = False для деактивации
     #
     def __updateFrame(self, turnON):
         if turnON:
