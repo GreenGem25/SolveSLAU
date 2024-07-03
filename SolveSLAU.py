@@ -120,25 +120,7 @@ class SolveSLAU:
     #   иначе выводит ошибку
     #
     def __btnSolveClicked(self):
-        a = []
-        b = []
-        a_i = []  # строка списка A
-        j = 0
-
-        # 1D entries matrix to 2D A matrix and 1D B matrix
-        for i in range(len(self.__entries)):
-            val = self.__entries[i].get()
-            if val == '':
-                val = 0
-                self.__entries[i].insert(0, '0')
-            if j == self.__variables:
-                b.append(float(val))
-                a.append(a_i)
-                a_i = []
-                j = 0
-            else:
-                a_i.append(float(val))
-                j += 1
+        a, b = self.__getMatrices()
 
         if self.__comboSelected == 'Гаусс':
             print('Гаусс')
@@ -160,6 +142,34 @@ class SolveSLAU:
                 print(self.__zeidel(a, b, eps, iterCount))
             except ZeroDivisionError:
                 print('Невозможно решить систему.')
+
+    #
+    #   Функция, которая получает матрицы коэффициентов
+    #
+    #   Возвращает: (a[][], b[])
+    #
+    def __getMatrices(self):
+        a = []
+        b = []
+        a_i = []  # строка списка A
+        j = 0
+
+        # 1D entries matrix to 2D A matrix and 1D B matrix
+        for i in range(len(self.__entries)):
+            val = self.__entries[i].get()
+            if val == '':
+                val = 0
+                self.__entries[i].insert(0, '0')
+            if j == self.__variables:
+                b.append(float(val))
+                a.append(a_i)
+                a_i = []
+                j = 0
+            else:
+                a_i.append(float(val))
+                j += 1
+
+        return a, b
 
     #
     #   Функция, которая получает значения
