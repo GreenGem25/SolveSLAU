@@ -356,7 +356,27 @@ class SolveSLAU:
     #   Возвращает массив ответов X (float[]).
     #
     def __simpleIterations(self, a, b, eps, iterCount):
-        pass
+        x0 = [0] * self.__variables
+        x1 = [0] * self.__variables
+        maxPrecision = -float('inf')
+        precision = 0.0
+        iter = 0
+        while abs(maxPrecision) > eps:
+            if iter >= iterCount: break
+            iter += 1
+            maxPrecision = -float('inf')
+            for i in range(0, self.__variables):
+                s = 0
+                for j in range(0, self.__variables):
+                    if i != j:
+                        s += a[i][j] * x0[j]
+                x1[i] = (b[i] - s) / a[i][i]
+                precision = abs(x1[i] - x0[i])
+                if precision > maxPrecision:
+                    maxPrecision = precision
+            for i in range(0, self.__variables):
+                x0[i] = x1[i]
+        return x1
 
     #
     #   Функция, решающая систему методом Зейделя.
@@ -367,7 +387,26 @@ class SolveSLAU:
     #   Возвращает массив ответов X (float[]).
     #
     def __zeidel(self, a, b, eps, iterCount):
-        pass
+        x0 = [0] * self.__variables
+        x1 = [0] * self.__variables
+        maxPrecision = -float('inf')
+        precision = 0.0
+        iter = 0
+        while abs(maxPrecision) > eps:
+            if iter >= iterCount: break
+            iter += 1
+            maxPrecision = -float('inf')
+            for i in range(0, self.__variables):
+                s = 0
+                for j in range(0, self.__variables):
+                    if i != j:
+                        s += a[i][j] * x0[j]
+                x1[i] = (b[i] - s) / a[i][i]
+                precision = abs(x1[i] - x0[i])
+                if precision > maxPrecision:
+                    maxPrecision = precision
+                x0[i] = x1[i]
+        return x1
 
 
 if __name__ == "__main__":
