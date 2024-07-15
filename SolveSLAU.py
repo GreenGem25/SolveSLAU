@@ -104,9 +104,49 @@ class SolveSLAU:
                           activebackground='#27292b', fg='#fff', activeforeground='#fff', font=30)
         btnSolve.grid(row=8, column=2, pady=(15, 5))
 
+    #
+    #   Функция, запускающая главный цикл приложения
+    #
     def start(self):
         self.__root.update_idletasks()
         self.__root.mainloop()
+
+    #
+    #   Функция, открывающая новое окно
+    #
+    def __openWindow(self, answer):
+        window = tkinter.Toplevel(self.__root)
+        window.geometry('400x400')
+        window['bg'] = '#27292b'
+        window.resizable(False, False)
+        window.title('Результат работы')
+
+        window.grid_rowconfigure(0, weight=1)
+        window.grid_columnconfigure(0, weight=1)
+
+        canvas = Canvas(window, bg='#27292b', border=0, scrollregion=(0, 0, 0, self.__variables * 35), height=300, width=400,
+                        borderwidth=0)
+        canvas.grid(row=0, column=0, sticky='news')
+        vsbY = Scrollbar(window, orient=VERTICAL, command=canvas.yview)
+        vsbY.grid(row=0, column=1, sticky='ns')
+        frame_labels = Frame(canvas, bg='#27292b')
+        frame_labels.grid_rowconfigure(0, weight=1)
+        frame_labels.grid_columnconfigure(0, weight=1)
+        canvas.create_window((0, 0), window=frame_labels, anchor='nw')
+
+        if not answer:
+            label = Label(canvas, text='Невозможно решить систему.', background='#27292b', foreground='#fff', font=30)
+            label.place(relx=.5, rely=.5, anchor="center")
+        else:
+            for i in range(0, self.__variables):
+                label = Label(frame_labels, text=f'x{i+1} = {answer[i]}', background='#27292b', foreground='#fff', font=30)
+                label.grid(row=i, column=0, ipadx=5, pady=5, sticky='w')
+
+        btnExit = Button(window, text='Выход', command=window.destroy, bg='#6b6b6b',
+                         activebackground='#27292b', fg='#fff', activeforeground='#fff', font=30)
+        btnExit.grid(row=1, column=0, sticky='news', columnspan=2)
+
+        window.grab_set()
 
     #
     #   Функция, запускающая процесс решения
@@ -121,27 +161,28 @@ class SolveSLAU:
     #
     def __btnSolveClicked(self):
         a, b = self.__getMatrices()
+        x = []
 
         if self.__comboSelected == 'Гаусс':
-            print('Гаусс')
             try:
-                print(self.__gauss(a, b))
+                x = self.__gauss(a, b)
             except ZeroDivisionError:
-                print('Невозможно решить систему.')
+                x = []
+            self.__openWindow(x)
         elif self.__comboSelected == 'Простые итерации':
-            print('Простые итерации')
             eps, iterCount = self.__getEpsAndIter()
             try:
-                print(self.__simpleIterations(a, b, eps, iterCount))
+                x = self.__simpleIterations(a, b, eps, iterCount)
             except ZeroDivisionError:
-                print('Невозможно решить систему.')
+                x = []
+            self.__openWindow(x)
         elif self.__comboSelected == 'Зейдель':
-            print('Зейдель')
             eps, iterCount = self.__getEpsAndIter()
             try:
-                print(self.__zeidel(a, b, eps, iterCount))
+                x = self.__zeidel(a, b, eps, iterCount)
             except ZeroDivisionError:
-                print('Невозможно решить систему.')
+                x = []
+            self.__openWindow(x)
 
     #
     #   Функция, которая получает матрицы коэффициентов
