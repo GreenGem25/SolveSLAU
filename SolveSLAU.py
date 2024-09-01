@@ -114,7 +114,7 @@ class SolveSLAU:
     #
     #   Функция, открывающая новое окно
     #
-    def __openWindow(self, answer):
+    def __openWindow(self, answer, message):
         window = tkinter.Toplevel(self.__root)
         window.geometry('400x400')
         window['bg'] = '#27292b'
@@ -135,7 +135,7 @@ class SolveSLAU:
         canvas.create_window((0, 0), window=frame_labels, anchor='nw')
 
         if not answer:
-            label = Label(canvas, text='Невозможно решить систему.', background='#27292b', foreground='#fff', font=30)
+            label = Label(canvas, text=message, background='#27292b', foreground='#fff', font=30)
             label.place(relx=.5, rely=.5, anchor="center")
         else:
             for i in range(0, self.__variables):
@@ -162,27 +162,40 @@ class SolveSLAU:
     def __btnSolveClicked(self):
         a, b = self.__getMatrices()
         x = []
+        message = ''
 
         if self.__comboSelected == 'Гаусс':
             try:
                 x = self.__gauss(a, b)
             except ZeroDivisionError:
                 x = []
-            self.__openWindow(x)
+                message = 'Невозможно решить систему.'
+            except Exception as e:
+                x = []
+                message = e
+            self.__openWindow(x, message)
         elif self.__comboSelected == 'Простые итерации':
             eps, iterCount = self.__getEpsAndIter()
             try:
                 x = self.__simpleIterations(a, b, eps, iterCount)
             except ZeroDivisionError:
                 x = []
-            self.__openWindow(x)
+                message = 'Невозможно решить систему.'
+            except Exception as e:
+                x = []
+                message = e
+            self.__openWindow(x, message)
         elif self.__comboSelected == 'Зейдель':
             eps, iterCount = self.__getEpsAndIter()
             try:
                 x = self.__zeidel(a, b, eps, iterCount)
             except ZeroDivisionError:
                 x = []
-            self.__openWindow(x)
+                message = 'Невозможно решить систему.'
+            except Exception as e:
+                x = []
+                message = e
+            self.__openWindow(x, message)
 
     #
     #   Функция, которая получает матрицы коэффициентов
@@ -397,7 +410,9 @@ class SolveSLAU:
     #   Возвращает массив ответов X (float[]).
     #
     def __simpleIterations(self, a, b, eps, iterCount):
-        x0 = [0] * self.__variables
+        x0 = []
+        for i in range(self.__variables):
+            x0.append(b[i] / a[i][i])
         x1 = [0] * self.__variables
         maxPrecision = -float('inf')
         precision = 0.0
@@ -415,6 +430,8 @@ class SolveSLAU:
                 precision = abs(x1[i] - x0[i])
                 if precision > maxPrecision:
                     maxPrecision = precision
+            if abs(maxPrecision) > 100000:
+                raise Exception('Итерации не сходятся,\nпопробуйте использовать метод Гаусса.')
             for i in range(0, self.__variables):
                 x0[i] = x1[i]
         return x1
@@ -428,7 +445,9 @@ class SolveSLAU:
     #   Возвращает массив ответов X (float[]).
     #
     def __zeidel(self, a, b, eps, iterCount):
-        x0 = [0] * self.__variables
+        x0 = []
+        for i in range(self.__variables):
+            x0.append(b[i] / a[i][i])
         x1 = [0] * self.__variables
         maxPrecision = -float('inf')
         precision = 0.0
@@ -447,6 +466,8 @@ class SolveSLAU:
                 if precision > maxPrecision:
                     maxPrecision = precision
                 x0[i] = x1[i]
+            if abs(maxPrecision) > 100000:
+                raise Exception('Итерации не сходятся,\nпопробуйте использовать метод Гаусса.')
         return x1
 
 
