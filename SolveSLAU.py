@@ -81,7 +81,7 @@ class SolveSLAU:
                                 vcmd=(self.__root.register(self.__checkFloatInput), '%P'),
                                 background='#6b6b6b',
                                 foreground='#fff', font=20, width=10)
-        self.__entryEps.insert(0, '0.1')
+        self.__entryEps.insert(0, '0.01')
         self.__entryEps.config(state='disabled')
         self.__entryEps.grid(row=5, column=2, pady=(5, 5))
 
@@ -95,7 +95,7 @@ class SolveSLAU:
                                  vcmd=(self.__root.register(self.__checkIntInput), '%P'),
                                  background='#6b6b6b',
                                  foreground='#fff', font=20, width=10)
-        self.__entryIter.insert(0, '1')
+        self.__entryIter.insert(0, '10')
         self.__entryIter.config(state='disabled')
         self.__entryIter.grid(row=7, column=2, pady=(5, 5))
 
@@ -235,13 +235,13 @@ class SolveSLAU:
     def __getEpsAndIter(self):
         eps = self.__entryEps.get()
         if eps == '':
-            eps = 0.1
-            self.__entryEps.insert(0, '0.1')
+            eps = 0.01
+            self.__entryEps.insert(0, '0.01')
         eps = float(eps)
         if eps == 0:
-            eps = 0.1
+            eps = 0.01
             self.__entryEps.delete(0, tkinter.END)
-            self.__entryEps.insert(0, '0.1')
+            self.__entryEps.insert(0, '0.01')
         if eps < 0:
             eps = abs(eps)
             self.__entryEps.delete(0, tkinter.END)
@@ -249,13 +249,13 @@ class SolveSLAU:
 
         iterCount = self.__entryIter.get()
         if iterCount == '':
-            iterCount = 1
-            self.__entryIter.insert(0, '1')
+            iterCount = 10
+            self.__entryIter.insert(0, '10')
         iterCount = int(iterCount)
         if iterCount == 0:
-            iterCount = 1
+            iterCount = 10
             self.__entryIter.delete(0, tkinter.END)
-            self.__entryIter.insert(0, '1')
+            self.__entryIter.insert(0, '10')
 
         return eps, iterCount
 
