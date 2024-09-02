@@ -3,7 +3,7 @@ from tkinter import *
 from tkinter.ttk import Combobox
 from tkinter.ttk import Style
 from PIL import Image, ImageTk
-
+import numpy as np
 
 class SolveSLAU:
     def __init__(self):
@@ -379,27 +379,51 @@ class SolveSLAU:
                         i += 1
 
     #
-    #   Функция, решающая систему методом Гаусса.
+    #   Меняет строку m[col] с одной из нижестоящих строк, с большим начальным элементом
+    #
+    #   Принимает матрицу m (np.matrix), номер шага прямого хода k (int)
+    #   Ничего не возвращает (изменяет матрицу m)
+    #
+    def __bubbleMaxRow(self, m, k):
+        ind = k + np.argmax(np.abs(m[k:, k]))
+        if ind != k:
+            m[k, :], m[ind, :] = np.copy(m[ind, :]), np.copy(m[k, :])
+
+    #
+    #   Функция, определяющая единичную матрицу
+    #
+    #   Принимает квадратную матрицу m (np.matrix)
+    #   Возвращает True/False
+    #
+    def __isSingular(self, m):
+        return np.any(np.diag(m) == 0)
+
+    #
+    #   Функция, решающая систему методом Гаусса с постолбцовым выбором главного элемента.
     #
     #   Принимает массив коэффициентов А и B (float[]).
     #   Возвращает массив ответов X (float[])
     #
     def __gauss(self, a, b):
-        x = [0] * self.__variables
-        for k in range(0, self.__variables - 1):
-            for i in range(k + 1, self.__variables):
-                c = a[i][k] / a[k][k]
-                a[i][k] = 0
-                for j in range(k + 1, self.__variables):
-                    a[i][j] -= c * a[k][j]
-                b[i] -= c * b[k]
-        x[self.__variables - 1] = b[self.__variables - 1] / a[self.__variables - 1][self.__variables - 1]
-        for i in range(self.__variables - 1, -1, -1):
-            s = 0.0
-            for j in range(i + 1, self.__variables):
-                s += a[i][j] * x[j]
-                x[i] = (b[i] - s) / a[i][i]
-        return x
+        m = []
+        for i in range(self.__variables):
+            a[i].append(b[i])
+            m.append(a[i])
+        m = np.matrix(m)
+        n = m.shape[0]
+        for k in range(n - 1):
+            self.__bubbleMaxRow(m, k)
+            for i in range(k + 1, n):
+                frac = m[i, k] / m[k, k]
+                m[i, :] -= m[k, :] * frac
+        if self.__isSingular(m):
+            raise Exception('Система имеет бесконечное\nчисло решений.')
+        x = np.matrix([0.0 for i in range(n)]).T
+        for k in range(n - 1, -1, -1):
+            x[k, 0] = (m[k, -1] - m[k, k:n] * x[k:n, 0]) / m[k, k]
+
+        return [ans[0] for ans in x.tolist()]
+
 
     #
     #   Функция, решающая систему методом простых итераций.
