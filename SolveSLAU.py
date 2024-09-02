@@ -390,7 +390,7 @@ class SolveSLAU:
             m[k, :], m[ind, :] = np.copy(m[ind, :]), np.copy(m[k, :])
 
     #
-    #   Функция, определяющая единичную матрицу
+    #   Функция, определяющая необособленную матрицу
     #
     #   Принимает квадратную матрицу m (np.matrix)
     #   Возвращает True/False
@@ -417,7 +417,7 @@ class SolveSLAU:
                 frac = m[i, k] / m[k, k]
                 m[i, :] -= m[k, :] * frac
         if self.__isSingular(m):
-            raise Exception('Система имеет бесконечное\nчисло решений.')
+            raise Exception('Система имеет бесконечное число решений\nили не имеет их вовсе.')
         x = np.matrix([0.0 for i in range(n)]).T
         for k in range(n - 1, -1, -1):
             x[k, 0] = (m[k, -1] - m[k, k:n] * x[k:n, 0]) / m[k, k]
