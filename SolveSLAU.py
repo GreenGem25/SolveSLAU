@@ -5,6 +5,7 @@ from tkinter.ttk import Style
 from PIL import Image, ImageTk
 import numpy as np
 
+
 class SolveSLAU:
     def __init__(self):
         # Открытие основного окна
