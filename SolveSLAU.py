@@ -424,7 +424,6 @@ class SolveSLAU:
 
         return [ans[0] for ans in x.tolist()]
 
-
     #
     #   Функция, решающая систему методом простых итераций.
     #
